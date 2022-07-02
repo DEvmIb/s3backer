@@ -99,7 +99,7 @@
                                       + S3B_BLOCK_NUM_DIGITS + 2)
 
 // Separator string used when "--blockHashPrefix" is in effect
-#define BLOCK_HASH_PREFIX_SEPARATOR "-"
+#define BLOCK_HASH_PREFIX_SEPARATOR "/"
 
 // Bucket listing API constants
 #define LIST_PARAM_MARKER           "marker"
@@ -1128,10 +1128,12 @@ http_io_block_hash_prefix(s3b_block_t block_num)
 {
     s3b_block_t hash;
     int n;
-
+    printf("%d < muh\n", block_num);
     hash = block_num;
-    for (n = 12; n > 0; n--)
-        hash = ((hash >> 8) ^ hash) * 0x6b + n;
+    while (hash >= 256)
+        hash /= 10;
+    //for (n = 12; n > 0; n--)
+    //    hash = ((hash >> 8) ^ hash) * 0x6b + n;
     return hash;
 }
 

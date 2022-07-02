@@ -371,8 +371,9 @@ test_io_write_block(struct s3backer_store *const s3b, s3b_block_t block_num, con
     struct test_io_conf *const config = priv->config;
     char block_hash_buf[S3B_BLOCK_NUM_DIGITS + 2];
     u_char md5[MD5_DIGEST_LENGTH];
-    char temp[PATH_MAX];
+    //char temp[PATH_MAX];
     char path[PATH_MAX];
+    char mkpath[PATH_MAX];
     int read_overlap;
     int write_overlap;
     MD5_CTX ctx;
@@ -441,6 +442,9 @@ test_io_write_block(struct s3backer_store *const s3b, s3b_block_t block_num, con
 
     // Generate path
     http_io_format_block_hash(config->blockHashPrefix, block_hash_buf, sizeof(block_hash_buf), block_num);
+    snvprintf(mkpath, sizeof(path), "%s/%s%s",
+      config->bucket, config->prefix, block_hash_buf);
+    mkdir(mkpath,0744);
     snvprintf(path, sizeof(path), "%s/%s%s%0*jx",
       config->bucket, config->prefix, block_hash_buf, S3B_BLOCK_NUM_DIGITS, (uintmax_t)block_num);
 
