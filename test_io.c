@@ -456,30 +456,31 @@ test_io_write_block(struct s3backer_store *const s3b, s3b_block_t block_num, con
     }
 
     // Write into temporary file
-    snvprintf(temp, sizeof(temp), "%s.XXXXXX", path);
-    if ((fd = mkstemp(temp)) == -1) {
+    // snvprintf(temp, sizeof(temp), "%s.XXXXXX", path);
+    // if ((fd = mkstemp(temp)) == -1) {
+    if ((fd = open(path, O_CREAT | O_WRONLY,S_IRUSR)) == -1) {
         r = errno;
-        (*config->log)(LOG_ERR, "%s: %s", temp, strerror(r));
+        (*config->log)(LOG_ERR, "%s: %s", path, strerror(r));
         goto done;
     }
     for (total = 0; total < config->block_size; total += r) {
         if ((r = write(fd, (const char *)src + total, config->block_size - total)) == -1) {
             r = errno;
-            (*config->log)(LOG_ERR, "can't write %s: %s", temp, strerror(r));
+            (*config->log)(LOG_ERR, "can't write %s: %s", path, strerror(r));
             close(fd);
-            (void)unlink(temp);
+            (void)unlink(path);
             goto done;
         }
     }
     close(fd);
 
     // Rename file
-    if (rename(temp, path) == -1) {
+    /* if (rename(temp, path) == -1) {
         r = errno;
         (*config->log)(LOG_ERR, "can't rename %s: %s", temp, strerror(r));
         (void)unlink(temp);
         goto done;
-    }
+    } */
     r = 0;
 
     // Logging
